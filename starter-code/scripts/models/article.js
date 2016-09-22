@@ -47,9 +47,10 @@
       function(rows) {
         if (rows.length) {
           Article.loadAll(rows);
+          nextFunction();
           // Article.insertRecord();
           // .insertRecord();
-        /* TODO:
+        /* :
            1 - Use Article.loadAll to instanitate these rows,
            2 - Pass control to the view by invoking the next function that
                 was passed in to Article.fetchAll */
@@ -58,18 +59,17 @@
             responseData.forEach(function(obj) {
               var article = new Article(obj); // This will instantiate an article instance based on each article object from our JSON.
               article.insertRecord();
-              /* TODO:
+              /* DONE:
                1 - 'insert' the newly-instantiated article in the DB:
              */
             });
             // Now get ALL the records out of the database:
-            Article.loadAll(responseData);
             webDB.execute(
-              'SELECT * FROM articleTable', // <-----TODO: query our table
+              'SELECT * FROM articleTable', // <-----DONE: query our table
               function(rows) {
-                Article.loadAll(nextFunction);
-                Article.insertRecord();
-                // TODO:
+                Article.loadAll(rows);
+                nextFunction();
+                // DONE:
                 // 1 - Use Article.loadAll to process our rows,
                 // 2 - Pass control to the view by calling the next function that was passed in to Article.fetchAll
               });
@@ -83,7 +83,7 @@
       [{
         /* NOTE: this is an advanced admin option, so you will need to test
           out an individual article in the console */
-        'sql': '', // <---TODO: Delete an article instance from the database based on its id:
+        'sql': 'DELETE FROM articleTable WHERE id=?', // <---DONE: Delete an article instance from the database based on its id:
         'data': [this.id]
       }]
     );
@@ -91,7 +91,7 @@
 
   Article.clearTable = function() {
     webDB.execute(
-      '' // <----TODO: delete all records from the articles table.
+      'DELETE * FROM articleTable;' // <----DONE: delete all records from the articles table.
     );
   };
 
