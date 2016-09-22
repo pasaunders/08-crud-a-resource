@@ -17,7 +17,7 @@
   // Set up a DB table for articles.
   Article.createTable = function() {
     webDB.execute(
-      '', // TODO: What SQL command do we run here inside these quotes?
+      'CREATE TABLE IF NOT EXISTS articleTable(title VARCHAR, category VARCHAR, author VARCHAR, authorUrl VARCHAR, publishedOn TIMESTAMP(8), body VARCHAR);', // Done: What SQL command do we run here inside these quotes?
       function() {
         console.log('Successfully set up the articles table.');
       }
@@ -35,7 +35,7 @@
     webDB.execute(
       [{
         // NOTE: insertRecord should be called elsewhere after we retrieve our JSON
-        'sql': '', // <----- TODO: complete our SQL query here, inside the quotes.
+        'sql': 'INSERT INTO articleTable(title, category, author, authorUrl, publishedOn, body) VALUES(?,?,?,?,?,?);', // <----- Done: complete our SQL query here, inside the quotes.
         'data': [this.title, this.category, this.author, this.authorUrl, this.publishedOn, this.body]
       }]
     );
@@ -43,9 +43,12 @@
 
   Article.fetchAll = function(nextFunction) {
     webDB.execute(
-      '', // <-----TODO: fill these quotes to query our table.
+      'SELECT * FROM articleTable;', // <-----Done: fill these quotes to query our table.
       function(rows) {
         if (rows.length) {
+          Article.loadAll(rows);
+          // Article.insertRecord();
+          // .insertRecord();
         /* TODO:
            1 - Use Article.loadAll to instanitate these rows,
            2 - Pass control to the view by invoking the next function that
@@ -54,14 +57,18 @@
           $.getJSON('/data/hackerIpsum.json', function(responseData) {
             responseData.forEach(function(obj) {
               var article = new Article(obj); // This will instantiate an article instance based on each article object from our JSON.
+              article.insertRecord();
               /* TODO:
                1 - 'insert' the newly-instantiated article in the DB:
              */
             });
             // Now get ALL the records out of the database:
+            Article.loadAll(responseData);
             webDB.execute(
-              '', // <-----TODO: query our table
+              'SELECT * FROM articleTable', // <-----TODO: query our table
               function(rows) {
+                Article.loadAll(nextFunction);
+                Article.insertRecord();
                 // TODO:
                 // 1 - Use Article.loadAll to process our rows,
                 // 2 - Pass control to the view by calling the next function that was passed in to Article.fetchAll
@@ -126,7 +133,7 @@
     });
   };
 
-// TODO: ensure that our table has been setup.
-
+// Done: ensure that our table has been setup.
+  Article.createTable();
   module.Article = Article;
 })(window);
